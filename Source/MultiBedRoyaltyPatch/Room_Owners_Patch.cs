@@ -46,7 +46,7 @@ namespace MultiBedRoyaltyPatch
                     return true;
                 }
 
-                var returnValue = new List<Pawn>();
+                var returnValue = new HashSet<Pawn>();
                 for (var index = 0; index < building_Bed.OwnersForReading.Count; index++)
                 {
                     var pawn = building_Bed.OwnersForReading[index];
