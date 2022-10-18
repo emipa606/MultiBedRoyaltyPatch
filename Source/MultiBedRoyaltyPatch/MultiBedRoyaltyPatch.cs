@@ -2,15 +2,14 @@
 using HarmonyLib;
 using Verse;
 
-namespace MultiBedRoyaltyPatch
+namespace MultiBedRoyaltyPatch;
+
+[StaticConstructorOnStartup]
+internal static class MultiBedRoyaltyPatch
 {
-    [StaticConstructorOnStartup]
-    internal static class MultiBedRoyaltyPatch
+    static MultiBedRoyaltyPatch()
     {
-        static MultiBedRoyaltyPatch()
-        {
-            Log.Message("Multi-Bed Royalty Patch started.");
-            new Harmony("Multi-Bed Royalty Patch").PatchAll(Assembly.GetExecutingAssembly());
-        }
+        Log.Message("Multi-Bed Royalty Patch started.");
+        new Harmony("Multi-Bed Royalty Patch").PatchAll(Assembly.GetExecutingAssembly());
     }
 }

@@ -1,16 +1,16 @@
 # MultiBedRoyaltyPatch
 
-![Image](https://i.imgur.com/WAEzk68.png)
+![Image](https://i.imgur.com/buuPQel.png)
 
 Update of Oldkings mod
 https://steamcommunity.com/sharedfiles/filedetails/?id=2066116134
 
 - Multibeds should now only count if all pawns assigned to it have some romantic relation with any of the other pawns assigned.
 
-![Image](https://i.imgur.com/7Gzt3Rg.png)
+![Image](https://i.imgur.com/pufA0kM.png)
 
 	
-![Image](https://i.imgur.com/NOW7jU1.png)
+![Image](https://i.imgur.com/Z4GOv8H.png)
 
 Patches 3+ beds to work with royalty content and avoid the unwarranted room requirements alert.
 
@@ -19,7 +19,7 @@ Tested with https://steamcommunity.com/sharedfiles/filedetails/?id=2008138191] P
 Uses Harmony.
 Please leave a message for any problems.
 
-![Image](https://i.imgur.com/Rs6T6cr.png)
+![Image](https://i.imgur.com/PwoNOj4.png)
 
 
 
@@ -29,6 +29,7 @@ Please leave a message for any problems.
 -  For best support, please use the Discord-channel for error-reporting.
 -  Do not report errors by making a discussion-thread, I get no notification of that.
 -  If you have the solution for a problem, please post it to the GitHub repository.
+
 
 
 

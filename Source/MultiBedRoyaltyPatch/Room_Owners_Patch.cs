@@ -3,94 +3,93 @@ using HarmonyLib;
 using RimWorld;
 using Verse;
 
-namespace MultiBedRoyaltyPatch
+namespace MultiBedRoyaltyPatch;
+
+[HarmonyPatch(typeof(Room))]
+[HarmonyPatch("Owners", MethodType.Getter)]
+internal class Room_Owners_Patch
 {
-    [HarmonyPatch(typeof(Room))]
-    [HarmonyPatch("Owners", MethodType.Getter)]
-    internal class Room_Owners_Patch
+    // ReSharper disable once RedundantAssignment
+    private static bool Prefix(Room __instance, ref IEnumerable<Pawn> __result)
     {
-        // ReSharper disable once RedundantAssignment
-        private static bool Prefix(Room __instance, ref IEnumerable<Pawn> __result)
+        __result = new List<Pawn>();
+        if (__instance.TouchesMapEdge)
         {
-            __result = new List<Pawn>();
-            if (__instance.TouchesMapEdge)
+            return false;
+        }
+
+        if (__instance.IsHuge)
+        {
+            return false;
+        }
+
+        if (__instance.Role != RoomRoleDefOf.Bedroom && __instance.Role != RoomRoleDefOf.PrisonCell &&
+            __instance.Role != RoomRoleDefOf.Barracks && __instance.Role != RoomRoleDefOf.PrisonBarracks)
+        {
+            return false;
+        }
+
+        foreach (var building_Bed in __instance.ContainedBeds)
+        {
+            if (!building_Bed.def.building.bed_humanlike)
             {
-                return false;
+                continue;
             }
 
-            if (__instance.IsHuge)
+            if (building_Bed.OwnersForReading.Count == 0)
             {
-                return false;
+                continue;
             }
 
-            if (__instance.Role != RoomRoleDefOf.Bedroom && __instance.Role != RoomRoleDefOf.PrisonCell &&
-                __instance.Role != RoomRoleDefOf.Barracks && __instance.Role != RoomRoleDefOf.PrisonBarracks)
+            if (building_Bed.OwnersForReading.Count < 3)
             {
-                return false;
+                return true;
             }
 
-            foreach (var building_Bed in __instance.ContainedBeds)
+            var returnValue = new HashSet<Pawn>();
+            for (var index = 0; index < building_Bed.OwnersForReading.Count; index++)
             {
-                if (!building_Bed.def.building.bed_humanlike)
+                var pawn = building_Bed.OwnersForReading[index];
+                if (pawn == null)
                 {
                     continue;
                 }
 
-                if (building_Bed.OwnersForReading.Count == 0)
+                if (index == building_Bed.OwnersForReading.Count - 1)
                 {
-                    continue;
+                    returnValue.Add(pawn);
                 }
 
-                if (building_Bed.OwnersForReading.Count < 3)
+                var pawnHasLover = false;
+                for (var otherIndex = 0; otherIndex < building_Bed.OwnersForReading.Count; otherIndex++)
                 {
-                    return true;
-                }
-
-                var returnValue = new HashSet<Pawn>();
-                for (var index = 0; index < building_Bed.OwnersForReading.Count; index++)
-                {
-                    var pawn = building_Bed.OwnersForReading[index];
-                    if (pawn == null)
+                    if (otherIndex == index)
                     {
                         continue;
                     }
 
-                    if (index == building_Bed.OwnersForReading.Count - 1)
+                    var otherPawn = building_Bed.OwnersForReading[otherIndex];
+                    if (!LovePartnerRelationUtility.LovePartnerRelationExists(pawn, otherPawn))
                     {
-                        returnValue.Add(pawn);
+                        continue;
                     }
 
-                    var pawnHasLover = false;
-                    for (var otherIndex = 0; otherIndex < building_Bed.OwnersForReading.Count; otherIndex++)
-                    {
-                        if (otherIndex == index)
-                        {
-                            continue;
-                        }
-
-                        var otherPawn = building_Bed.OwnersForReading[otherIndex];
-                        if (!LovePartnerRelationUtility.LovePartnerRelationExists(pawn, otherPawn))
-                        {
-                            continue;
-                        }
-
-                        pawnHasLover = true;
-                        break;
-                    }
-
-                    if (!pawnHasLover)
-                    {
-                        return false;
-                    }
-
-                    returnValue.Add(pawn);
+                    pawnHasLover = true;
+                    break;
                 }
 
-                __result = returnValue;
-                break;
+                if (!pawnHasLover)
+                {
+                    return false;
+                }
+
+                returnValue.Add(pawn);
             }
 
-            return false;
+            __result = returnValue;
+            break;
         }
+
+        return false;
     }
 }
