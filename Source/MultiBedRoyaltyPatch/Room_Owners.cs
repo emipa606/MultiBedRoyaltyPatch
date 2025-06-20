@@ -5,9 +5,8 @@ using Verse;
 
 namespace MultiBedRoyaltyPatch;
 
-[HarmonyPatch(typeof(Room))]
-[HarmonyPatch("Owners", MethodType.Getter)]
-internal class Room_Owners_Patch
+[HarmonyPatch(typeof(Room), nameof(Room.Owners), MethodType.Getter)]
+internal class Room_Owners
 {
     // ReSharper disable once RedundantAssignment
     private static bool Prefix(Room __instance, ref IEnumerable<Pawn> __result)
@@ -29,6 +28,8 @@ internal class Room_Owners_Patch
             return false;
         }
 
+        var foundBed = false;
+
         foreach (var building_Bed in __instance.ContainedBeds)
         {
             if (!building_Bed.def.building.bed_humanlike)
@@ -36,14 +37,13 @@ internal class Room_Owners_Patch
                 continue;
             }
 
-            if (building_Bed.OwnersForReading.Count == 0)
+            switch (building_Bed.OwnersForReading.Count)
             {
-                continue;
-            }
-
-            if (building_Bed.OwnersForReading.Count < 3)
-            {
-                return true;
+                case 0:
+                    continue;
+                case < 3:
+                    foundBed = true;
+                    continue;
             }
 
             var returnValue = new HashSet<Pawn>();
@@ -90,6 +90,6 @@ internal class Room_Owners_Patch
             break;
         }
 
-        return false;
+        return foundBed;
     }
 }
